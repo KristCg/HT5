@@ -4,6 +4,10 @@ import simpy
 import numpy as np
 
 
+import time
+
+contador = 10
+cou_ocupado = False
 
 RANDOM_SEED = 42
 I_MAX = 3  # Instrucciones maximas por unidad de tiempo
@@ -67,6 +71,47 @@ print(f"Tiempo promedio: {t_prom:.2f}")
 print(f"Desviación estándar: {t_desv:.2f}")
 
 env.run(until=100)
+
+def ready():
+    global cou_ocupado
+    print("[READY] Esperando que el cou esté desocupado...")
+    while cou_ocupado:
+        time.sleep(1)  
+    print("[READY] cou desocupado, pasando al estado RUNNING")
+    running()
+
+def running():
+    global contador, cou_ocupado
+    cou_ocupado = True
+    print(f"[RUNNING] Iniciando ejecución. Contador actual: {contador}")
+
+ 
+    contador -= 3
+    time.sleep(1)  
+
+    if contador <= 0:
+        print("[RUNNING] Proceso terminado (contador = 0)")
+        cou_ocupado = False
+    else:
+        siguiente_estado = random.randint(1, 2)
+        print(f"[RUNNING] Proceso incompleto. Contador restante: {contador}")
+        if siguiente_estado == 1:
+            print("[RUNNING] Enviando de nuevo al estado READY")
+            cou_ocupado = False
+            ready() 
+        else:
+            print("[RUNNING] Enviando al estado WAITING")
+            waiting()
+
+
+def waiting():
+    global cou_ocupado
+    print("[WAITING] Esperando un momento antes de volver a READY...")
+    time.sleep(2)  # Simular espera
+    cou_ocupado = False
+    ready()  
+
+ready()
 
 
 
