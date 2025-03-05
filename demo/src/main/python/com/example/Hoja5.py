@@ -7,8 +7,8 @@ import time
 RANDOM_SEED = 42
 I_MAX = 3  # Instrucciones máximas por unidad de tiempo
 TIME = 1  # Tiempo en el que se atiende un proceso
-T_INTER = 10  # Intervalo de creación de procesos
-NUM_PROCESOS = 25  # Número de procesos
+T_INTER = 1  # Intervalo de creación de procesos
+NUM_PROCESOS = 150  # Número de procesos
 
 start = []
 end = []
@@ -79,13 +79,9 @@ env.process(generator(env))
 env.run(until=200)  
 
 
-t_prom_start = np.mean(start)
-t_prom_end = np.mean(end)
-t_prom = t_prom_end - t_prom_start
+t_total = [end_time - start_time for start_time, end_time in zip(start, end)]
+t_prom = np.mean(t_total)  # Tiempo promedio
+t_desv = np.std(t_total)   # Desviación estándar
+print(f"Tiempo promedio: {t_prom:.2f}")
+print(f"Desviación estándar: {t_desv:.2f}")
 
-t_desv_start = np.std(start)
-t_desv_end = np.std(end)
-t_desv = t_desv_end - t_desv_start
-
-print(t_prom)
-print(t_desv)
